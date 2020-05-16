@@ -94,7 +94,7 @@ class ModTable extends React.Component {
                     )}
                 </tbody>
             </table>
-            <input type="button" onClick={this.post} />
+            <button type="button" onClick={this.post}>Post</button>
             </div>
         }
         return <div>Fetching...</div>
