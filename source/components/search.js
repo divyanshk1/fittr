@@ -1,5 +1,5 @@
 import React from 'react'
-import fetch from 'node-fetch'
+import Button from 'react-bootstrap/Button';
 
 
 class Search extends React.Component {
@@ -18,7 +18,7 @@ class Search extends React.Component {
     render() {
         return <form onSubmit={this.submitForm}>
             <input name="searchbox" type="text" class="search" placeholder="Search"></input>
-            <button type='submit'>Search</button>
+            <Button type='submit'>Search</Button>
         </form>
     }
 }
