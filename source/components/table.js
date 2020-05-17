@@ -25,13 +25,15 @@ class ModTable extends React.Component {
         baseUrl+= `filter_type=${this.props.filterType}&`;
         baseUrl+= this.props.filterType=='favorite'?'user_id=334079&':'';
         baseUrl+= 'format=api&';
-        baseUrl+= `page=${this.state.currentPage}&`;
+        baseUrl+= `page=${overwrite?0:this.state.currentPage}&`;
         baseUrl+= `search=${this.props.val}&`
         let headers = this.props.filterType=='favorite'?{Authorization: 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMzM0MDc5IiwiY3JlYXRlZF9hdCI6eyJkYXRlIjoiMjAyMC0wNS0wOCAyMToxMToyMS45MDgzMTIiLCJ0aW1lem9uZV90eXBlIjozLCJ0aW1lem9uZSI6IlVUQyJ9LCJlbWFpbCI6InNoYXNod2F0a21yLjAwMUBnbWFpbC5jb20iLCJwcm92aWRlciI6IkRFRkFVTFQiLCJpc19hZG1pbiI6MCwiaXNfY29hY2giOjAsImxvZ2luX2hpc3RvcnlfaWQiOjg4MzI1MywiaXNfY29ycG9yYXRlX3VzZXIiOjAsImNvcnBvcmF0ZV9pZCI6MH0.bn6sWU_pn2HZtFKq4xuok0r25EFNDnBxYf7rThCYb8I'}:{};
         fetch(baseUrl,{headers})
             .then(res => res.text())
             .then(this.parseHtmlResponse)
-            .then(data => this.setState({ data: overwrite?data:this.state.data.concat(data), currentPage: this.state.currentPage+1}));
+            .then(data => {
+                if(data.length) this.setState({ data: overwrite?data:this.state.data.concat(data), currentPage: overwrite?1:this.state.currentPage+1})
+            });
     }
 
     isBottom(el) {
