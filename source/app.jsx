@@ -1,6 +1,7 @@
 import React from 'react'
 //import components and pass to App
 import ModTable from './components/table'
+import DietChart from './components/dietchart'
 import Search from './components/search'
 import Tabs from 'react-bootstrap/Tabs'
 import Tab from 'react-bootstrap/Tab'
@@ -28,6 +29,9 @@ class App extends React.Component {
                 </Tab>
                 <Tab eventKey="favorite" title="Favorite">
                     <ModTable val={this.state.val} filterType='favorite'/>
+                </Tab>
+                <Tab eventKey="dietchart" title="Diet Chart">
+                    <DietChart/>
                 </Tab>
             </Tabs>
         </div>)
