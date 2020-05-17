@@ -6,7 +6,7 @@ class ModTable extends React.Component {
     constructor(props) {
         super (props)
         this.state = {
-            data: '',
+            data: [],
             currentPage: 0,
             post: {}
         },
@@ -16,14 +16,12 @@ class ModTable extends React.Component {
         this.trackScrolling = this.trackScrolling.bind(this)
     }
 
-    apiCall() {
+    apiCall(overwrite=false) {
+        console.log('calling');
         fetch(`https://diettool.squats.in/v2/appingredients/?filter_type=all&format=api&page=${this.state.currentPage}&search=${this.props.val}`)
-            .then(res => {
-                console.log(res.body);
-                return res.text();
-            })
+            .then(res => res.text())
             .then(this.parseHtmlResponse)
-            .then(data => this.setState({ data: data }));
+            .then(data => this.setState({ data: overwrite?data:this.state.data.concat(data), currentPage: this.state.currentPage+1}));
     }
 
     isBottom(el) {
@@ -31,27 +29,19 @@ class ModTable extends React.Component {
     }
 
     componentDidMount() {
+        this.apiCall();
         document.addEventListener('scroll', this.trackScrolling);
     }
 
-    componentDidUpdate() {
-        console.log("Component updated")
-        this.apiCall();
+    componentDidUpdate(prevProps) {
+        if(this.props.val != prevProps.val) this.apiCall(true);
     }
 
     trackScrolling() {
         const wrappedElement = document.getElementById('header');
         if (this.isBottom(wrappedElement)) {
             console.log('header bottom reached');
-            document.removeEventListener('scroll', this.trackScrolling);
-            fetch(`https://diettool.squats.in/v2/appingredients/?filter_type=all&format=api&page=${this.state.currentPage}&search=${this.props.val}`)
-            .then(res => {
-                console.log(res.body);
-                return res.text()
-            })
-            .then(this.parseHtmlResponse)
-            .then(data=> this.setState({data: this.state.data.concat(data), currentPage: this.state.currentPage+1}))
-
+            this.apiCall()
         }
     };
 
