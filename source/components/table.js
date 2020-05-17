@@ -2,8 +2,10 @@ import React from 'react'
 import fetch from 'node-fetch'
 import Table from 'react-bootstrap/Table'
 import {Col} from 'react-bootstrap'
-import { filter } from 'minimatch'
-import { format } from 'util'
+import DropdownButton from 'react-bootstrap/DropdownButton'
+import Dropdown from 'react-bootstrap/Dropdown'
+import Button from 'react-bootstrap/Button';
+
 
 
 class ModTable extends React.Component {
@@ -21,6 +23,7 @@ class ModTable extends React.Component {
         this.post = this.post.bind(this)
         this.isBottom = this.isBottom.bind(this)
         this.trackScrolling = this.trackScrolling.bind(this)
+        this.addItem = this.addItem.bind(this)
     }
 //https://diettool.squats.in/v2/appingredients/?filter_type=${this.props.filterType}&user_id=334079&format=api&page=${this.state.currentPage}&search=${this.props.val}
     apiCall(overwrite=false) {
@@ -43,19 +46,26 @@ class ModTable extends React.Component {
     }
 
     componentDidMount() {
+        console.log('componenet mount')
         this.apiCall();
-        document.addEventListener('scroll', this.trackScrolling);
+        // document.addEventListener('scroll', this.trackScrolling);
     }
 
     componentDidUpdate(prevProps) {
+        console.log('componenet update')
         if(this.props.val != prevProps.val) this.apiCall(true);
     }
 
     trackScrolling() {
+        console.log('componenet scroll')
         const wrappedElement = document.getElementById('header');
         if (this.isBottom(wrappedElement)) {
             console.log('header bottom reached');
-            this.apiCall()
+            if(this.state.currentPage <= 3)
+                this.apiCall()
+            else {
+                document.removeEventListener('scroll');
+            }
         }
     };
 
@@ -101,6 +111,12 @@ class ModTable extends React.Component {
         }
     }
 
+    addItem(event) {
+        event.preventDefault();
+        let target = event.target[0].eventKey;
+        console.log(target)
+    }
+
     render() {
         if(this.state.data.length) {
             return <Col md={12} id="header">
@@ -118,7 +134,16 @@ class ModTable extends React.Component {
                     {this.state.data.map((item,ind) => 
                         <tr key={item.id+ind}>
                             <td>    
-                                <input type='checkbox' name={ind} onChange={this.onCheckBoxChange} />
+                                <form onSubmit={this.addItem}>
+                                <DropdownButton size="sm" id={'dropdown-basic-button-'+ind} title="Time">
+                                    <Dropdown.Item name="breakfast" eventKey="breakfast">Breakfast</Dropdown.Item>
+                                    <Dropdown.Item name="lunch" eventKey="lunch">Lunch</Dropdown.Item>
+                                    <Dropdown.Item name="snacks" eventKey="snacks">Snacks</Dropdown.Item>
+                                    <Dropdown.Item name="dinner" eventKey="dinner">Dinner</Dropdown.Item>
+                                </DropdownButton>
+                                <input style={{width: "50px", marginTop:"10px"}} type="text" onBlur={this.updateAddFood}></input>
+                                <Button type='submit' size="sm" style={{width: "20px", marginLeft: "20px"}}>+</Button>
+                                </form>
                             </td>  
                             <td>{ind+1}</td>
                             {this.columns.map((col) =>  

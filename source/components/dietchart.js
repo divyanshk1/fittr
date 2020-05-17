@@ -12,6 +12,7 @@ class DietChart extends React.Component {
 
         this.state = {
             data: {},
+            total: {},
             post: {}
         }
     }
@@ -34,7 +35,7 @@ class DietChart extends React.Component {
         })
             .then(res => res.json())
             .then(data => {
-                this.setState({data: data.result.data.diet_chart});
+                this.setState({data: data.result.data.diet_chart, total: data.result.data.tracker});
             });
     }
 
@@ -43,7 +44,8 @@ class DietChart extends React.Component {
     }
 
     render() {
-        let columns = ['id', 'name', 'carbs', 'fats', 'protein', 'calories', 'quantity', 'unit']
+        let columns = ['id', 'name', 'carbs', 'fats', 'protein', 'calories', 'quantity', 'unit'];
+        let totalColumns = ['carbs', 'fats', 'protein', 'calories'];
         if(this.state.data['breakfast'])
             return <Table><tbody>
                 {Object.keys(this.state.data).map((foodtype) => 
@@ -54,7 +56,7 @@ class DietChart extends React.Component {
                             <thead>
                             <tr>
                                     {columns.map(col => 
-                                        <th>{col}</th>
+                                        <th key={'th'+col}>{col}</th>
                                     )}
                                 </tr>
                             </thead>
@@ -62,7 +64,7 @@ class DietChart extends React.Component {
                                 {this.state.data[foodtype].map(element => 
                                 <tr key={element.id}>
                                     {columns.map(col => 
-                                        <td>{element[col]}</td>
+                                        <td key={element.id+col}>{element[col]}</td>
                                     )}
                                 </tr>
                             )}
@@ -71,6 +73,22 @@ class DietChart extends React.Component {
                         </td>
                     </tr>
                     )}
+                    <tr><td>Total</td>
+                    <td><Table>
+                                <thead><tr>
+                                {totalColumns.map(col => 
+                                        <th key={'th'+col}>{col}</th>
+                                    )}
+                                    </tr></thead>
+                                <tbody>
+                                <tr>
+                                        {totalColumns.map(col => 
+                                        <td key={'td'+col}>{this.state.total[col]}</td>
+                                    )}
+                                </tr>
+                                </tbody>
+                        </Table></td>
+                    </tr>
                 </tbody></Table>
         return <div>Fetching...</div>
     }
