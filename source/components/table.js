@@ -7,21 +7,53 @@ class ModTable extends React.Component {
         super (props)
         this.state = {
             data: '',
+            currentPage: 0,
             post: {}
         },
         this.onCheckBoxChange = this.onCheckBoxChange.bind(this);
         this.post = this.post.bind(this)
+        this.isBottom = this.isBottom.bind(this)
+        this.trackScrolling = this.trackScrolling.bind(this)
     }
 
-    componentDidMount(){
-        fetch('https://diettool.squats.in/v2/appingredients/?filter_type=all&format=api&page=0&search=')
-        .then(res => {
-            console.log(res.body);
-            return res.text()
-        })
-        .then(this.parseHtmlResponse)
-        .then(data=> this.setState({data}))
+    apiCall() {
+        fetch(`https://diettool.squats.in/v2/appingredients/?filter_type=all&format=api&page=${this.state.currentPage}&search=${this.props.val}`)
+            .then(res => {
+                console.log(res.body);
+                return res.text();
+            })
+            .then(this.parseHtmlResponse)
+            .then(data => this.setState({ data: data }));
     }
+
+    isBottom(el) {
+        return el.getBoundingClientRect().bottom <= window.innerHeight;
+    }
+
+    componentDidMount() {
+        document.addEventListener('scroll', this.trackScrolling);
+    }
+
+    componentDidUpdate() {
+        console.log("Component updated")
+        this.apiCall();
+    }
+
+    trackScrolling() {
+        const wrappedElement = document.getElementById('header');
+        if (this.isBottom(wrappedElement)) {
+            console.log('header bottom reached');
+            document.removeEventListener('scroll', this.trackScrolling);
+            fetch(`https://diettool.squats.in/v2/appingredients/?filter_type=all&format=api&page=${this.state.currentPage}&search=${this.props.val}`)
+            .then(res => {
+                console.log(res.body);
+                return res.text()
+            })
+            .then(this.parseHtmlResponse)
+            .then(data=> this.setState({data: this.state.data.concat(data), currentPage: this.state.currentPage+1}))
+
+        }
+    };
 
     parseHtmlResponse(html){
 
@@ -70,7 +102,7 @@ class ModTable extends React.Component {
             let columns = Object.keys(this.state.data[0]).map(col => {
                 return {id: col, label: col}
             });
-            return <div>
+            return <div id="header">
               <table>
                 <thead>
                     <tr>
