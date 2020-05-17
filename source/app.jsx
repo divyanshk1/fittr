@@ -2,6 +2,8 @@ import React from 'react'
 //import components and pass to App
 import ModTable from './components/table'
 import Search from './components/search'
+import Tabs from 'react-bootstrap/Tabs'
+import Tab from 'react-bootstrap/Tab'
 
 class App extends React.Component {
     constructor(props){
@@ -20,7 +22,14 @@ class App extends React.Component {
     return (
         <div>
             <Search updateTable={this.handleSubmit}/>
-            <ModTable val={this.state.val}/>
+            <Tabs defaultActiveKey="general">
+                <Tab eventKey="general" title="General">
+                    <ModTable val={this.state.val} filterType='all'/>
+                </Tab>
+                <Tab eventKey="favorite" title="Favorite">
+                    <ModTable val={this.state.val} filterType='favorite'/>
+                </Tab>
+            </Tabs>
         </div>)
     }
 }

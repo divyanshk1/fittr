@@ -1,5 +1,9 @@
 import React from 'react'
 import fetch from 'node-fetch'
+import Table from 'react-bootstrap/Table'
+import {Col} from 'react-bootstrap'
+import { filter } from 'minimatch'
+import { format } from 'util'
 
 
 class ModTable extends React.Component {
@@ -15,10 +19,16 @@ class ModTable extends React.Component {
         this.isBottom = this.isBottom.bind(this)
         this.trackScrolling = this.trackScrolling.bind(this)
     }
-
+//https://diettool.squats.in/v2/appingredients/?filter_type=${this.props.filterType}&user_id=334079&format=api&page=${this.state.currentPage}&search=${this.props.val}
     apiCall(overwrite=false) {
-        console.log('calling');
-        fetch(`https://diettool.squats.in/v2/appingredients/?filter_type=all&format=api&page=${this.state.currentPage}&search=${this.props.val}`)
+        let baseUrl = 'https://diettool.squats.in/v2/appingredients/?';
+        baseUrl+= `filter_type=${this.props.filterType}&`;
+        baseUrl+= this.props.filterType=='favorite'?'user_id=334079&':'';
+        baseUrl+= 'format=api&';
+        baseUrl+= `page=${this.state.currentPage}&`;
+        baseUrl+= `search=${this.props.val}&`
+        let headers = this.props.filterType=='favorite'?{Authorization: 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMzM0MDc5IiwiY3JlYXRlZF9hdCI6eyJkYXRlIjoiMjAyMC0wNS0wOCAyMToxMToyMS45MDgzMTIiLCJ0aW1lem9uZV90eXBlIjozLCJ0aW1lem9uZSI6IlVUQyJ9LCJlbWFpbCI6InNoYXNod2F0a21yLjAwMUBnbWFpbC5jb20iLCJwcm92aWRlciI6IkRFRkFVTFQiLCJpc19hZG1pbiI6MCwiaXNfY29hY2giOjAsImxvZ2luX2hpc3RvcnlfaWQiOjg4MzI1MywiaXNfY29ycG9yYXRlX3VzZXIiOjAsImNvcnBvcmF0ZV9pZCI6MH0.bn6sWU_pn2HZtFKq4xuok0r25EFNDnBxYf7rThCYb8I'}:{};
+        fetch(baseUrl,{headers})
             .then(res => res.text())
             .then(this.parseHtmlResponse)
             .then(data => this.setState({ data: overwrite?data:this.state.data.concat(data), currentPage: this.state.currentPage+1}));
@@ -92,8 +102,8 @@ class ModTable extends React.Component {
             let columns = Object.keys(this.state.data[0]).map(col => {
                 return {id: col, label: col}
             });
-            return <div id="header">
-              <table>
+            return <Col md={12} id="header">
+              <Table>
                 <thead>
                     <tr>
                         {columns.map(col=>
@@ -115,9 +125,9 @@ class ModTable extends React.Component {
                         </tr>
                     )}
                 </tbody>
-            </table>
+            </Table>
             <button type="button" onClick={this.post}>Post</button>
-            </div>
+            </Col>
         }
         return <div>Fetching...</div>
     }
