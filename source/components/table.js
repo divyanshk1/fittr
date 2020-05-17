@@ -7,8 +7,11 @@ import { format } from 'util'
 
 
 class ModTable extends React.Component {
+
     constructor(props) {
         super (props)
+        this.columns = ['id','name','carbs','calories','protein','fats'];
+
         this.state = {
             data: [],
             currentPage: 0,
@@ -24,15 +27,14 @@ class ModTable extends React.Component {
         let baseUrl = 'https://diettool.squats.in/v2/appingredients/?';
         baseUrl+= `filter_type=${this.props.filterType}&`;
         baseUrl+= this.props.filterType=='favorite'?'user_id=334079&':'';
-        baseUrl+= 'format=api&';
+        baseUrl+= 'format=json&';
         baseUrl+= `page=${overwrite?0:this.state.currentPage}&`;
         baseUrl+= `search=${this.props.val}&`
         let headers = this.props.filterType=='favorite'?{Authorization: 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMzM0MDc5IiwiY3JlYXRlZF9hdCI6eyJkYXRlIjoiMjAyMC0wNS0wOCAyMToxMToyMS45MDgzMTIiLCJ0aW1lem9uZV90eXBlIjozLCJ0aW1lem9uZSI6IlVUQyJ9LCJlbWFpbCI6InNoYXNod2F0a21yLjAwMUBnbWFpbC5jb20iLCJwcm92aWRlciI6IkRFRkFVTFQiLCJpc19hZG1pbiI6MCwiaXNfY29hY2giOjAsImxvZ2luX2hpc3RvcnlfaWQiOjg4MzI1MywiaXNfY29ycG9yYXRlX3VzZXIiOjAsImNvcnBvcmF0ZV9pZCI6MH0.bn6sWU_pn2HZtFKq4xuok0r25EFNDnBxYf7rThCYb8I'}:{};
         fetch(baseUrl,{headers})
-            .then(res => res.text())
-            .then(this.parseHtmlResponse)
+            .then(res => res.json())
             .then(data => {
-                if(data.length) this.setState({ data: overwrite?data:this.state.data.concat(data), currentPage: overwrite?1:this.state.currentPage+1})
+                if(data.result.data.data_list.length) this.setState({ data: overwrite?data:this.state.data.concat(data.result.data.data_list), currentPage: overwrite?1:this.state.currentPage+1})
             });
     }
 
@@ -101,16 +103,15 @@ class ModTable extends React.Component {
 
     render() {
         if(this.state.data.length) {
-            let columns = Object.keys(this.state.data[0]).map(col => {
-                return {id: col, label: col}
-            });
             return <Col md={12} id="header">
               <Table>
                 <thead>
                     <tr>
-                        {columns.map(col=>
-                            <th key={col.id}>{col.label}</th>
+                        <th></th><th></th>
+                        {this.columns.map(col=>
+                            <th key={col}>{col}</th>
                         )}
+                        <th>Qty</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -119,11 +120,13 @@ class ModTable extends React.Component {
                             <td>    
                                 <input type='checkbox' name={ind} onChange={this.onCheckBoxChange} />
                             </td>  
-                            {columns.map((col) =>  
-                                <td key={col.id+ind}>
-                                    {item[col.label]}
+                            <td>{ind+1}</td>
+                            {this.columns.map((col) =>  
+                                <td key={col+ind}>
+                                    {item[col]}
                                 </td>
                             )}
+                            <td>{item['quantity']+' '+item['unit']}</td>
                         </tr>
                     )}
                 </tbody>
