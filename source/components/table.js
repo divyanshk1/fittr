@@ -6,7 +6,7 @@ import DropdownButton from 'react-bootstrap/DropdownButton'
 import Dropdown from 'react-bootstrap/Dropdown'
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import {getTodayDate} from '../utils'
+import { getTodayDate } from '../utils'
 
 
 
@@ -15,23 +15,27 @@ class ModTable extends React.Component {
   constructor(props) {
     super(props)
     this.columns = ['id', 'name', 'carbs', 'calories', 'protein', 'fats'];
+    this.isApiCallInProgress = false;
 
     this.state = {
       data: [],
       currentPage: 0,
       post: {}
     },
-      this.addItemJson = { diet_chart: {} },
-      this.isBottom = this.isBottom.bind(this)
-    this.trackScrolling = this.trackScrolling.bind(this)
-    this.addItem = this.addItem.bind(this)
+    this.addItemJson = { diet_chart: {} },
+    this.isBottom = this.isBottom.bind(this),
+    this.trackScrolling = this.trackScrolling.bind(this),
+    this.addItem = this.addItem.bind(this),
     this.post = this.post.bind(this)
   }
 
   apiCall(overwrite = false) {
+    if(this.isApiCallInProgress)
+      return;
+    this.isApiCallInProgress = true;
     let baseUrl = 'https://diettool.squats.in/v2/appingredients/?';
     baseUrl += `filter_type=${this.props.filterType}&`;
-    baseUrl += this.props.filterType == 'favorite' ? 'user_id=334079&' : '';
+    baseUrl += this.props.filterType == 'favorite' ? 'user_id=59488&' : '';
     baseUrl += 'format=json&';
     baseUrl += `page=${overwrite ? 0 : this.state.currentPage}&`;
     baseUrl += `search=${this.props.val}&`
@@ -41,8 +45,9 @@ class ModTable extends React.Component {
       .then(data => {
         this.setState({ data: overwrite ? data.result.data.data_list : this.state.data.concat(data.result.data.data_list) })
         if (data.result.data.data_list.length) {
-          this.setState({currentPage: overwrite ? 1 : this.state.currentPage + 1})
+          this.setState({ currentPage: overwrite ? 1 : this.state.currentPage + 1 })
         }
+        this.isApiCallInProgress = false;
       });
   }
 
@@ -53,7 +58,12 @@ class ModTable extends React.Component {
   componentDidMount() {
     console.log('componenet mount')
     this.apiCall();
-    // document.addEventListener('scroll', this.trackScrolling);
+    document.addEventListener('scroll', this.trackScrolling);
+  }
+
+  componentWillUnmount() {
+    console.log(`Removing event listener from ${this.props.filterType}`)
+    document.removeEventListener('scroll', this.trackScrolling);
   }
 
   componentDidUpdate(prevProps) {
@@ -66,11 +76,8 @@ class ModTable extends React.Component {
     const wrappedElement = document.getElementById('header');
     if (this.isBottom(wrappedElement)) {
       console.log('header bottom reached');
-      if (this.state.currentPage <= 3)
-        this.apiCall()
-      else {
-        document.removeEventListener('scroll');
-      }
+      console.log("Making API call");
+      this.apiCall()
     }
   };
 
@@ -79,7 +86,7 @@ class ModTable extends React.Component {
       params: {
         date: getTodayDate(),
         diet_chart: this.addItemJson.diet_chart,
-        user_id: "522317"
+        user_id: "334079"
       }
     }
 
@@ -120,6 +127,12 @@ class ModTable extends React.Component {
       quantity: quantity,
       tagType: timetype
     };
+    copyItem['calories'] =  item.calories * factor;  
+    copyItem['carbs'] =  item.carbs * factor;  
+    copyItem['protein'] =  item.protein * factor;  
+    copyItem['fats'] =  item.fats * factor;  
+    copyItem['quantity'] =  quantity; 
+
     console.log(JSON.stringify(copyItem));
     if (!this.addItemJson.diet_chart[timetype])
       this.addItemJson.diet_chart[timetype] = []
@@ -129,6 +142,7 @@ class ModTable extends React.Component {
   render() {
     if (this.state.data.length) {
       return <Col md={12} id="header">
+        <button type="button" onClick={this.post}>Post</button>
         <Table>
           <thead>
             <tr>
@@ -165,7 +179,6 @@ class ModTable extends React.Component {
             )}
           </tbody>
         </Table>
-        <button type="button" onClick={this.post}>Post</button>
       </Col>
     }
     return <div>Fetching...</div>
