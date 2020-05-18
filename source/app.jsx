@@ -7,34 +7,34 @@ import Tabs from 'react-bootstrap/Tabs'
 import Tab from 'react-bootstrap/Tab'
 
 class App extends React.Component {
-    constructor(props){
+    constructor(props) {
         super(props)
-        this.state={
+        this.state = {
             val: ''
         }
         this.handleSubmit = this.handleSubmit.bind(this)
     }
 
-    handleSubmit(text){
-        this.setState({val:text})
+    handleSubmit(text) {
+        this.setState({ val: text })
     }
 
-    render (){
-    return (
-        <div>
-            <Search updateTable={this.handleSubmit}/>
-            <Tabs defaultActiveKey="general">
-                <Tab eventKey="general" title="General">
-                    <ModTable val={this.state.val} filterType='all'/>
-                </Tab>
-                <Tab eventKey="favorite" title="Favorite">
-                    <ModTable val={this.state.val} filterType='favorite'/>
-                </Tab>
-                <Tab eventKey="dietchart" title="Diet Chart">
-                    <DietChart/>
-                </Tab>
-            </Tabs>
-        </div>)
+    render() {
+        return (
+            <div>
+                <Search updateTable={this.handleSubmit} />
+                <Tabs defaultActiveKey="general">
+                    <Tab eventKey="general" title="General">
+                        <ModTable val={this.state.val} filterType='all' />
+                    </Tab>
+                    <Tab eventKey="favorite" title="Favorite">
+                        <ModTable val={this.state.val} filterType='favorite' />
+                    </Tab>
+                    <Tab eventKey="dietchart" title="Diet Chart">
+                        <DietChart />
+                    </Tab>
+                </Tabs>
+            </div>)
     }
 }
 
