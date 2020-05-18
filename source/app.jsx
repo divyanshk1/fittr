@@ -5,7 +5,7 @@ import DietChart from './components/dietchart'
 import Search from './components/search'
 import Tabs from 'react-bootstrap/Tabs'
 import Tab from 'react-bootstrap/Tab'
-import {Router, Route} from 'react-router-dom'
+import {Router, Route, Redirect} from 'react-router-dom'
 import { createBrowserHistory } from "history";
 
 let history = createBrowserHistory();
@@ -34,8 +34,9 @@ class App extends React.Component {
             <Route path='/general' component={props=><ModTable {...props} val={this.state.val} filterType='all'/>}/>
             <Route path='/favorite' component={props=><ModTable val={this.state.val} filterType='favorite'/>}/>
             <Route path='/dietchart' component={DietChart} />
+            <Redirect from="/" to="/general" />
         </Router>)
-git    }
+    }
 }
 
 export default App
