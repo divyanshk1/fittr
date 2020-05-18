@@ -6,6 +6,7 @@ import DropdownButton from 'react-bootstrap/DropdownButton'
 import Dropdown from 'react-bootstrap/Dropdown'
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import {getTodayDate} from '../utils'
 
 
 
@@ -34,11 +35,14 @@ class ModTable extends React.Component {
     baseUrl += 'format=json&';
     baseUrl += `page=${overwrite ? 0 : this.state.currentPage}&`;
     baseUrl += `search=${this.props.val}&`
-    let headers = this.props.filterType == 'favorite' ? { Authorization: `Bearer ${process.env.REACT_APP_NOT_SECRET_CODE}` } : {};
+    let headers = this.props.filterType == 'favorite' ? { Authorization: `Bearer ${process.env.AUTHENTICATION_TOKEN}` } : {};
     fetch(baseUrl, { headers })
       .then(res => res.json())
       .then(data => {
-        if (data.result.data.data_list.length) this.setState({ data: overwrite ? data : this.state.data.concat(data.result.data.data_list), currentPage: overwrite ? 1 : this.state.currentPage + 1 })
+        this.setState({ data: overwrite ? data.result.data.data_list : this.state.data.concat(data.result.data.data_list) })
+        if (data.result.data.data_list.length) {
+          this.setState({currentPage: overwrite ? 1 : this.state.currentPage + 1})
+        }
       });
   }
 
@@ -71,13 +75,9 @@ class ModTable extends React.Component {
   };
 
   post() {
-    let formatTwoDigits = (digit) => ("0" + digit).slice(-2);
-    var tempDate = new Date();
-    var date = `${tempDate.getFullYear()}-${formatTwoDigits(tempDate.getMonth() + 1)}-${formatTwoDigits(tempDate.getDate())}`;
-
     let body = {
       params: {
-        date: date,
+        date: getTodayDate(),
         diet_chart: this.addItemJson.diet_chart,
         user_id: "522317"
       }
@@ -85,7 +85,7 @@ class ModTable extends React.Component {
 
     let baseUrl = "https://diettool.squats.in/v2/appstorefooditems/"
     let headers = {
-      Authorization: `Bearer ${{process.env.AUTHENTICATION_TOKEN}}`,
+      Authorization: `Bearer ${process.env.AUTHENTICATION_TOKEN}`,
       'Content-Type': 'application/json'
     };
 

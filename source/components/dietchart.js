@@ -3,7 +3,8 @@ import fetch from 'node-fetch'
 import Table from 'react-bootstrap/Table'
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import { Col } from 'react-bootstrap'
+import {getTodayDate} from '../utils'
+
 
 
 class DietChart extends React.Component {
@@ -35,7 +36,7 @@ class DietChart extends React.Component {
     }
     console.log(jsonbody);
     let headers = {
-      'Authorization': `Bearer ${process.env.REACT_APP_NOT_SECRET_CODE}`,
+      'Authorization': `Bearer ${process.env.AUTHENTICATION_TOKEN}`,
       'Content-Type': 'application/json'
     };
 
@@ -56,7 +57,7 @@ class DietChart extends React.Component {
     let totalColumns = ['carbs', 'fats', 'protein', 'calories'];
     return <div>
       <Form onSubmit={this.apiCall}>
-        <input type="text" name="date" />
+        <input type="text" name="date" defaultValue={getTodayDate()}/>
         <input type="text" name="userid" />
         <Button type='submit' size="sm" style={{ width: "50px", marginLeft: "20px" }}>Fetch</Button>
       </Form>

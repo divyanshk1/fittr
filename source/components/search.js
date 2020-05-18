@@ -17,7 +17,7 @@ class Search extends React.Component {
 
   render() {
     return <form onSubmit={this.submitForm}>
-      <input name="searchbox" type="text" class="search" placeholder="Search"></input>
+      <input name="searchbox" type="text" placeholder="Search"></input>
       <Button type='submit'>Search</Button>
     </form>
   }
