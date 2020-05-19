@@ -35,7 +35,7 @@ class ModTable extends React.Component {
     this.isApiCallInProgress = true;
     let baseUrl = 'https://diettool.squats.in/v2/appingredients/?';
     baseUrl += `filter_type=${this.props.filterType}&`;
-    baseUrl += this.props.filterType == 'favorite' ? 'user_id=59488&' : '';
+    baseUrl += this.props.filterType == 'favorite' ? `user_id=${process.env.USERID}&` : '';
     baseUrl += 'format=json&';
     baseUrl += `page=${overwrite ? 0 : this.state.currentPage}&`;
     baseUrl += `search=${this.props.val}&`
@@ -86,7 +86,7 @@ class ModTable extends React.Component {
       params: {
         date: getTodayDate(),
         diet_chart: this.addItemJson.diet_chart,
-        user_id: "334079"
+        user_id: `${process.env.USERID}`
       }
     }
 
