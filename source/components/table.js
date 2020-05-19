@@ -82,10 +82,12 @@ class ModTable extends React.Component {
     }
   };
 
-  post() {
+  post(event) {
+    event.preventDefault();
+    let date = event.target[0].value;
     let body = {
       params: {
-        date: getTodayDate(),
+        date: date,
         diet_chart: this.addItemJson.diet_chart,
         user_id: `${process.env.USERID}`
       }
@@ -104,7 +106,7 @@ class ModTable extends React.Component {
     })
       .then(res => res.json())
       .then(data => {
-        console.log(JSON.stringify(data))
+        console.log("Submitted")
       });
   }
 
@@ -146,7 +148,13 @@ class ModTable extends React.Component {
   render() {
     if (this.state.data.length) {
       return <Col md={12} id="header">
-        <div><button type="button" onClick={this.post}>Submit</button><span style={{marginLeft: "20px"}}>Added Items: {this.state.totalAddedItems}</span></div>
+        <div style={{marginTop:"20px"}}>
+          <Form onSubmit={this.post}>
+            <span style={{marginLeft: "20px"}}>Added Items: {this.state.totalAddedItems}</span>
+            <input style={{marginLeft: "20px", paddingLeft: "10px", width: "110px"}} type="text" defaultValue={getTodayDate()} />
+            <button style={{marginLeft: "20px"}} type="submit">Submit</button>
+          </Form>
+        </div>
         <Table>
           <thead>
             <tr>
@@ -162,14 +170,14 @@ class ModTable extends React.Component {
               <tr key={item.id + ind}>
                 <td>
                   <Form onSubmit={event => this.addItem(event, item)}>
-                    <Form.Control as="select">
+                    <Form.Control as="select" style={{width: "130px"}}>
                       <option name="breakfast" value="breakfast">Breakfast</option>
                       <option name="lunch" value="lunch">Lunch</option>
                       <option name="snacks" value="snacks">Snacks</option>
                       <option name="dinner" value="dinner">Dinner</option>
                     </Form.Control>
-                    <input style={{ width: "50px", marginTop: "10px" }} type="text"></input>
-                    <Button type='submit' size="sm" style={{ width: "20px", marginLeft: "20px" }}>+</Button>
+                    <input style={{ width: "60px", marginTop: "10px" }} type="text"></input>
+                    <Button type='submit' size="sm" style={{ width: "60px", marginLeft: "10px" }}>Add</Button>
                   </Form>
                 </td>
                 <td>{ind + 1}</td>

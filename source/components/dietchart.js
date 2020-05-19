@@ -93,7 +93,7 @@ class DietChart extends React.Component {
     return <div>
       <Form onSubmit={e => {this.updateState(e);this.apiCall()}}>
         <input type="text" name="date" defaultValue={this.date}/>
-        <input type="text" name="userid" defaultValue={this.userId}/>
+        <input type="hidden" name="userid" defaultValue={this.userId}/>
         <Button type='submit' size="sm" style={{ width: "50px", marginLeft: "20px" }}>Fetch</Button>
       </Form>
       {this.state.data['breakfast'] &&
