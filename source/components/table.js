@@ -20,6 +20,7 @@ class ModTable extends React.Component {
     this.state = {
       data: [],
       currentPage: 0,
+      totalAddedItems: 0,
       post: {}
     },
     this.addItemJson = { diet_chart: {} },
@@ -56,7 +57,7 @@ class ModTable extends React.Component {
   }
 
   componentDidMount() {
-    console.log('componenet mount')
+    console.log('component mount')
     this.apiCall();
     document.addEventListener('scroll', this.trackScrolling);
   }
@@ -67,12 +68,12 @@ class ModTable extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    console.log('componenet update')
+    console.log('component update')
     if (this.props.val != prevProps.val) this.apiCall(true);
   }
 
   trackScrolling() {
-    console.log('componenet scroll')
+    console.log('component scroll')
     const wrappedElement = document.getElementById('header');
     if (this.isBottom(wrappedElement)) {
       console.log('header bottom reached');
@@ -112,8 +113,10 @@ class ModTable extends React.Component {
     let timetype = event.target[0].value;
     let quantity = event.target[1].value;
 
-    if (!quantity)
+    let numQuantity = parseInt(quantity)
+    if(Number.isNaN(numQuantity) || numQuantity <= 0) {
       return;
+    }
 
     let copyItem = JSON.parse(JSON.stringify(item));
     copyItem['foodAddedMap'] = {};
@@ -137,12 +140,13 @@ class ModTable extends React.Component {
     if (!this.addItemJson.diet_chart[timetype])
       this.addItemJson.diet_chart[timetype] = []
     this.addItemJson.diet_chart[timetype].push(copyItem);
+    this.setState({totalAddedItems: this.state.totalAddedItems+1})
   }
 
   render() {
     if (this.state.data.length) {
       return <Col md={12} id="header">
-        <button type="button" onClick={this.post}>Post</button>
+        <div><button type="button" onClick={this.post}>Submit</button><span style={{marginLeft: "20px"}}>Added Items: {this.state.totalAddedItems}</span></div>
         <Table>
           <thead>
             <tr>
@@ -164,7 +168,7 @@ class ModTable extends React.Component {
                       <option name="snacks" value="snacks">Snacks</option>
                       <option name="dinner" value="dinner">Dinner</option>
                     </Form.Control>
-                    <input style={{ width: "50px", marginTop: "10px" }} type="text" onBlur={this.updateAddFood}></input>
+                    <input style={{ width: "50px", marginTop: "10px" }} type="text"></input>
                     <Button type='submit' size="sm" style={{ width: "20px", marginLeft: "20px" }}>+</Button>
                   </Form>
                 </td>
