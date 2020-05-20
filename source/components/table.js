@@ -2,8 +2,6 @@ import React from 'react'
 import fetch from 'node-fetch'
 import Table from 'react-bootstrap/Table'
 import { Col } from 'react-bootstrap'
-import DropdownButton from 'react-bootstrap/DropdownButton'
-import Dropdown from 'react-bootstrap/Dropdown'
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { getTodayDate } from '../utils'
