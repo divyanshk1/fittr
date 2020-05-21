@@ -99,6 +99,8 @@ class DietChart extends React.Component {
       </Form>
 
       <Form style={{float: "left", marginLeft: "20px"}} onSubmit={e => {this.copyChart(e)}}>
+      {/* POST v2/copychart/
+        {"params":{"user_id":"522317","from":"2020-05-18","to":"2020-05-22 23:44:40 +0530"}}'  */}
         <span>Copy To</span>
         <input style={{width: "110px", marginLeft: "20px"}} type="text" name="date"/>
         <Button type='submit' size="sm" style={{ width: "60px", marginLeft: "20px" }}>Submit</Button>
