@@ -91,11 +91,20 @@ class DietChart extends React.Component {
     let columns = ['id', 'name', 'carbs', 'fats', 'protein', 'calories', 'quantity', 'unit'];
     let totalColumns = ['carbs', 'fats', 'protein', 'calories'];
     return <div>
-      <Form onSubmit={e => {this.updateState(e);this.apiCall()}}>
-        <input type="text" name="date" defaultValue={this.date}/>
+      <div>
+      <Form style={{float: "left"}} onSubmit={e => {this.updateState(e);this.apiCall()}}>
+        <input style={{width: "110px"}} type="text" name="date" defaultValue={this.date}/>
         <input type="hidden" name="userid" defaultValue={this.userId}/>
         <Button type='submit' size="sm" style={{ width: "50px", marginLeft: "20px" }}>Fetch</Button>
       </Form>
+
+      <Form style={{float: "left", marginLeft: "20px"}} onSubmit={e => {this.copyChart(e)}}>
+        <span>Copy To</span>
+        <input style={{width: "110px", marginLeft: "20px"}} type="text" name="date"/>
+        <Button type='submit' size="sm" style={{ width: "60px", marginLeft: "20px" }}>Submit</Button>
+      </Form>
+      </div>
+      <div>
       {this.state.data['breakfast'] &&
         <Table><tbody>
           {Object.keys(this.state.data).map((foodtype) =>
@@ -142,6 +151,7 @@ class DietChart extends React.Component {
             </Table></td>
           </tr>
         </tbody></Table>}</div>
+        </div>
   }
 }
 
