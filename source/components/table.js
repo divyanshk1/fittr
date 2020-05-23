@@ -166,7 +166,7 @@ class ModTable extends React.Component {
           <tbody>
             {this.state.data.map((item, ind) =>
               <tr key={item.id + ind}>
-                <td>
+                <td key={item.id+ind+'form'}>
                   <Form onSubmit={event => this.addItem(event, item)}>
                     <Form.Control as="select" style={{width: "130px"}}>
                       <option name="breakfast" value="breakfast">Breakfast</option>

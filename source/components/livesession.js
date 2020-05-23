@@ -1,7 +1,10 @@
 import React from 'react'
 import fetch from 'node-fetch'
-import { Table,Image } from 'react-bootstrap';
+import { Table } from 'react-bootstrap';
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
 import ReactPlayer from 'react-player'
+import { getTodayDate } from '../utils';
 
 
 
@@ -12,19 +15,29 @@ class LiveSessionPage extends React.Component {
     console.log("Loading live session page")
     this.userId = process.env.USERID;
     this.endpoint = "/v6/live_session/list"
-    //1?date=1590068314&timezone=Asia/Calcutta&is_mine=0
+    this.isApiCallInProgress = false;
+    this.date = getTodayDate();
 
     this.state = {
-      data: []
+      data: [],
+      nextPage: 1
     },
-      this.apiCall = this.apiCall.bind(this)
+    this.isBottom = this.isBottom.bind(this),
+    this.trackScrolling = this.trackScrolling.bind(this),
+    this.apiCall = this.apiCall.bind(this)
+    this.fetchSessionsOnDate = this.fetchSessionsOnDate.bind(this)
   }
 
-  apiCall() {
-    let baseUrl = 'https://fittr-api.squats.in' + this.endpoint + "/1?";
-    baseUrl += "is_mine=0";
-    baseUrl += "&date=1590068314";
-    baseUrl += "&timezone=Asia/Calcutta";
+  apiCall(overwrite = false) {
+    if(this.isApiCallInProgress)
+      return;
+    this.isApiCallInProgress = true;
+    let baseUrl = 'https://fittr-api.squats.in' + this.endpoint;
+    baseUrl += '/' + this.state.nextPage + '?';
+    // baseUrl += "is_mine=0";
+    if(this.date != '')
+      baseUrl += "&date=" + Date.parse(this.date)/1000;
+    // baseUrl += "&timezone=Asia/Calcutta";
 
     let headers = {
       'Authorization': `Bearer ${process.env.AUTHENTICATION_TOKEN}`,
@@ -33,19 +46,57 @@ class LiveSessionPage extends React.Component {
 
     fetch(baseUrl, {headers: headers})
       .then(res => res.json())
-      .then(data => {
-        this.setState({ data: data.result.data.session_details });
+      .then(data => { 
+        this.setState({ data: overwrite ? data.result.data.session_details: this.state.data.concat( data.result.data.session_details) });
+        if (data.result.data.session_details.length) {
+          this.setState({ nextPage: overwrite ? 1 : this.state.nextPage + 1 })
+        }
+        this.isApiCallInProgress = false;
       });
   }
 
   componentDidMount() {
     console.log("Live session updated")
+    document.addEventListener('scroll', this.trackScrolling);
     this.apiCall();
+  }
+
+  componentWillUnmount() {
+    console.log(`Removing event listener from ${this.props.filterType}`)
+    document.removeEventListener('scroll', this.trackScrolling);
+  }
+
+  isBottom(el) {
+    return el.getBoundingClientRect().bottom <= window.innerHeight;
+  }
+
+  trackScrolling() {
+    console.log('component scroll')
+    const wrappedElement = document.getElementById('header');
+    if (this.isBottom(wrappedElement)) {
+      console.log('header bottom reached');
+      console.log("Making API call");
+      this.apiCall()
+    }
+  };
+
+  fetchSessionsOnDate(event) {
+    event.preventDefault();
+    let date = event.target[0].value;
+    this.date = date;
+    this.apiCall(true);
   }
   
   render() {
     let columns = ['title', 'image_url', 'start_date_time', 'duration', 'live_recorded_file']
-    return <div>
+    return <div id="header">
+      <div>
+      <Form style={{float: "left"}} onSubmit={this.fetchSessionsOnDate}>
+        <input style={{width: "110px"}} type="text" name="date" defaultValue={this.date}/>
+        <Button type='submit' size="sm" style={{ width: "50px", marginLeft: "20px" }}>Fetch</Button>
+      </Form>
+      </div>
+      <div>
       <Table>
         <thead>
           <tr>
@@ -64,6 +115,7 @@ class LiveSessionPage extends React.Component {
           )}
         </tbody>
       </Table>
+      </div>
     </div>
   }
 }
