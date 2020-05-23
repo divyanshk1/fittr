@@ -2,6 +2,7 @@ import React from 'react'
 //import components and pass to App
 import ModTable from './components/table'
 import DietChart from './components/dietchart'
+import LiveSessionPage from './components/livesession'
 import Search from './components/search'
 import Tabs from 'react-bootstrap/Tabs'
 import Tab from 'react-bootstrap/Tab'
@@ -30,10 +31,12 @@ class App extends React.Component {
                 <Tab eventKey="general" title="General"></Tab>
                 <Tab eventKey="favorite" title="Favorite"></Tab>
                 <Tab eventKey="dietchart" title="Diet Chart"></Tab>
+                <Tab eventKey="livesessions" title="Live Sessions"></Tab>
             </Tabs>
             <Route path='/general' component={props=><ModTable {...props} val={this.state.val} filterType='all'/>}/>
             <Route path='/favorite' component={props=><ModTable val={this.state.val} filterType='favorite'/>}/>
             <Route path='/dietchart' component={DietChart} />
+            <Route path='/livesessions' component={LiveSessionPage} />
             <Redirect from="/" to="/general" />
         </Router>)
     }

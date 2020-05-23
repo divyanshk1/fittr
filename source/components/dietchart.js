@@ -87,6 +87,34 @@ class DietChart extends React.Component {
     });
   }
 
+  copyChart(event) {
+    event.preventDefault();
+    let toDate = event.target[0].value;
+    let fromDate = this.date;
+    let headers = {
+      'Authorization': `Bearer ${process.env.AUTHENTICATION_TOKEN}`,
+      'Content-Type': 'application/json'
+    };
+    let url = "https://diettool.squats.in/v2/copychart/";
+
+    let params = {
+      params: {
+        user_id: this.userId,
+        from : fromDate,
+        to: toDate
+      }
+    }
+    fetch(url, {
+      headers: headers,
+      method: "POST",
+      body : JSON.stringify(params)
+    })
+    .then(console.log("Successfully copied"))
+    .catch(error => {
+      console.error(error);
+    });
+  }
+
   render() {
     let columns = ['id', 'name', 'carbs', 'fats', 'protein', 'calories', 'quantity', 'unit'];
     let totalColumns = ['carbs', 'fats', 'protein', 'calories'];
@@ -99,10 +127,8 @@ class DietChart extends React.Component {
       </Form>
 
       <Form style={{float: "left", marginLeft: "20px"}} onSubmit={e => {this.copyChart(e)}}>
-      {/* POST v2/copychart/
-        {"params":{"user_id":"522317","from":"2020-05-18","to":"2020-05-22 23:44:40 +0530"}}'  */}
         <span>Copy To</span>
-        <input style={{width: "110px", marginLeft: "20px"}} type="text" name="date"/>
+        <input style={{width: "110px", marginLeft: "20px"}} type="text"/>
         <Button type='submit' size="sm" style={{ width: "60px", marginLeft: "20px" }}>Submit</Button>
       </Form>
       </div>
