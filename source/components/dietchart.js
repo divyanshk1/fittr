@@ -11,7 +11,7 @@ class DietChart extends React.Component {
 
   constructor(props) {
     super(props)
-    this.columns = ['id', 'name', 'carbs', 'calories', 'protein', 'fats'];
+    this.foodtypes = ['breakfast', 'lunch', 'snacks', 'dinner'];
     this.userId = process.env.USERID;
     this.date = getTodayDate();
 
@@ -23,6 +23,7 @@ class DietChart extends React.Component {
       this.apiCall = this.apiCall.bind(this)
       this.deleteItem = this.deleteItem.bind(this)
       this.updateState = this.updateState.bind(this)
+      this.updateQuantity = this.updateQuantity.bind(this)
   }
 
   updateState(event) {
@@ -87,6 +88,58 @@ class DietChart extends React.Component {
     });
   }
 
+  updateQuantity(event, item) {
+    let foodtype =  event.target.getAttribute("foodtype");
+
+    let oldQuantity = item.quantity;
+    let newQuantity = parseInt(document.getElementById(foodtype + 'quantity-'+item.id).value)
+    if(Number.isNaN(newQuantity) || newQuantity <= 0) {
+      console.log("Invalid quantity added");
+      return;
+    }
+
+    if(oldQuantity == newQuantity) {
+      console.log("Quantity is same: " + oldQuantity);
+      return;
+    }
+    let factor = newQuantity / oldQuantity;
+
+    let copyItem = JSON.parse(JSON.stringify(item));
+
+    copyItem['calories'] =  item.calories * factor;  
+    copyItem['carbs'] =  item.carbs * factor;  
+    copyItem['protein'] =  item.protein * factor;  
+    copyItem['fats'] =  item.fats * factor;  
+    copyItem['quantity'] =  newQuantity; 
+
+    let body = {
+      params: {
+        date: this.date,
+        user_id: this.userId,
+        diet_chart : {}
+      }
+    }
+    body.params.diet_chart[foodtype] = [copyItem];
+
+    let baseUrl = "https://diettool.squats.in/v2/appstorefooditems/";
+    let headers = {
+      'Authorization': `Bearer ${process.env.AUTHENTICATION_TOKEN}`,
+      'Content-Type': 'application/json'
+    };
+
+    fetch(baseUrl, {
+      headers: headers,
+      method: "post",
+      body: JSON.stringify(body)
+    })
+    .then((res, data) => {
+      this.apiCall();
+    })
+    .catch(error => {
+      console.error(error);
+    });
+  }
+
   copyChart(event) {
     event.preventDefault();
     let toDate = event.target[0].value;
@@ -135,14 +188,14 @@ class DietChart extends React.Component {
       <div>
       {this.state.data['breakfast'] &&
         <Table><tbody>
-          {Object.keys(this.state.data).map((foodtype) =>
+          {this.foodtypes.map((foodtype) =>
             <tr key={foodtype}>
               <td>{foodtype}</td>
               <td>
                 <Table>
                   <thead>
                     <tr>
-                      <th></th>
+                      <th colSpan="2">Actions</th>
                       {columns.map(col =>
                         <th key={'th' + col}>{col}</th>
                       )}
@@ -152,8 +205,9 @@ class DietChart extends React.Component {
                     {this.state.data[foodtype].map(element =>
                       <tr key={element.id}>
                         <td style={{color: "red"}} food_item_id={element.id} foodtype={foodtype} onClick={this.deleteItem}>X</td>
-                        {columns.map(col =>
-                          <td key={element.id + col}>{element[col]}</td>
+                        <td style={{color: "red"}} foodtype={foodtype} onClick={e => {this.updateQuantity(e, element)}}>update</td>
+                        {columns.map(col => 
+                          <td key={element.id + col}>{col == "quantity"?<input id={foodtype + 'quantity-' + element.id} defaultValue={element[col]}/>: element[col]}</td>
                         )}
                       </tr>
                     )}
