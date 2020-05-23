@@ -190,7 +190,7 @@ class DietChart extends React.Component {
         <Table><tbody>
           {this.foodtypes.map((foodtype) =>
             <tr key={foodtype}>
-              <td>{foodtype}</td>
+              <td>{foodtype} ({this.state.data[foodtype].reduce((sumCalories, meal) => sumCalories + parseInt(meal.calories), 0)})</td>
               <td>
                 <Table>
                   <thead>

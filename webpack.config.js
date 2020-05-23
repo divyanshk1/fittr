@@ -7,7 +7,8 @@ module.exports = {
   entry: "./source/index.js",
   output: {
     "filename": "main.js",
-    "path": path.resolve(__dirname, "bin")
+    "path": path.resolve(__dirname, "bin"),
+    publicPath: '/'
   },
   devtool: "source-map",
   module: {
@@ -36,6 +37,9 @@ module.exports = {
         ]
       }
     ]
+  },
+  devServer: {
+    historyApiFallback: true
   },
   plugins: [
     new HtmlWebPackPlugin({
