@@ -1,22 +1,18 @@
 import React from 'react'
 import fetch from 'node-fetch'
 import { Table } from 'react-bootstrap';
-import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
-import { getTodayDate } from '../utils';
 import Myplayer from './myplayer/myplayer';
 
 
 
-class LiveSessionPage extends React.Component {
+class Challenges extends React.Component {
 
   constructor(props) {
     super(props)
     console.log("Loading live session page")
     this.userId = process.env.USERID;
-    this.endpoint = "/v6/live_session/list"
+    this.endpoint = "/v6/client/subgroups"
     this.isApiCallInProgress = false;
-    this.date = getTodayDate();
 
     this.state = {
       data: [],
@@ -25,7 +21,6 @@ class LiveSessionPage extends React.Component {
     this.isBottom = this.isBottom.bind(this),
     this.trackScrolling = this.trackScrolling.bind(this),
     this.apiCall = this.apiCall.bind(this)
-    this.fetchSessionsOnDate = this.fetchSessionsOnDate.bind(this)
   }
 
   apiCall(overwrite = false) {
@@ -34,21 +29,16 @@ class LiveSessionPage extends React.Component {
     this.isApiCallInProgress = true;
     let baseUrl = 'https://fittr-api.squats.in' + this.endpoint;
     baseUrl += `/${overwrite ? 1 : this.state.nextPage}?`;
-    // baseUrl += "is_mine=0";
-    if(this.date != '')
-      baseUrl += "&date=" + Date.parse(this.date)/1000;
-    // baseUrl += "&timezone=Asia/Calcutta";
-    console.log(this.state.nextPage);
+    baseUrl += "is_my_challenges=1&keyword=&video_arr=1";
     let headers = {
-      'Authorization': `Bearer ${process.env.AUTHENTICATION_TOKEN}`,
-      'Content-Type': 'application/json'
+      'Authorization': `Bearer ${process.env.AUTHENTICATION_TOKEN}`
     };
 
     fetch(baseUrl, {headers: headers})
       .then(res => res.json())
       .then(data => { 
-        this.setState({ data: overwrite ? data.result.data.session_details: this.state.data.concat( data.result.data.session_details) });
-        if (data.result.data.session_details.length) {
+        this.setState({ data: overwrite ? data.result.data: this.state.data.concat( data.result.data) });
+        if (data.result.data.length) {
           this.setState({ nextPage: overwrite ? 2 : this.state.nextPage + 1 })
         }
         this.isApiCallInProgress = false;
@@ -79,23 +69,10 @@ class LiveSessionPage extends React.Component {
       this.apiCall()
     }
   };
-
-  fetchSessionsOnDate(event) {
-    event.preventDefault();
-    let date = event.target[0].value;
-    this.date = date;
-    this.apiCall(true);
-  }
   
   render() {
-    let columns = ['title', 'image_url', 'start_date_time', 'duration', 'live_recorded_file']
+    let columns = ['id', 'demo_video', 'title', 'description']
     return <div id="header">
-      <div>
-      <Form style={{float: "left"}} onSubmit={this.fetchSessionsOnDate}>
-        <input style={{width: "110px"}} type="text" name="date" defaultValue={this.date}/>
-        <Button type='submit' size="sm" style={{ width: "50px", marginLeft: "20px" }}>Fetch</Button>
-      </Form>
-      </div>
       <div>
       <Table>
         <thead>
@@ -104,13 +81,10 @@ class LiveSessionPage extends React.Component {
           </tr>
         </thead>
         <tbody>
-          {this.state.data.map(session_detail => 
-            <tr post_id={session_detail.post_id} key={session_detail.session_id}>
-              {columns.map(colname => <td key={session_detail.session_id+colname}>{colname=='image_url'? 
-              <img style={{height:"200px", width:"180px"}} src={session_detail[colname]}/>: 
-              colname == 'live_recorded_file' ? 
-              <Myplayer url={session_detail[colname]}/>:
-              session_detail[colname]}</td>)}
+          {this.state.data.map(challenge => 
+            <tr post_id={challenge.id} key={challenge.id}>
+              {columns.map(colname => <td key={challenge.id+colname}>{colname=='demo_video'? 
+              <Myplayer url={challenge.demo_video.video}/>: challenge[colname]}</td>)}
             </tr>
           )}
         </tbody>
@@ -120,4 +94,4 @@ class LiveSessionPage extends React.Component {
   }
 }
 
-export default LiveSessionPage
+export default Challenges

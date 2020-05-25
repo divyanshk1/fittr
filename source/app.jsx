@@ -3,6 +3,7 @@ import React from 'react'
 import ModTable from './components/table'
 import DietChart from './components/dietchart'
 import LiveSessionPage from './components/livesession'
+import Challenges from './components/challenges'
 import Search from './components/search'
 import Tabs from 'react-bootstrap/Tabs'
 import Tab from 'react-bootstrap/Tab'
@@ -32,11 +33,13 @@ class App extends React.Component {
                 <Tab eventKey="favorite" title="Favorite"></Tab>
                 <Tab eventKey="dietchart" title="Diet Chart"></Tab>
                 <Tab eventKey="livesessions" title="Live Sessions"></Tab>
+                <Tab eventKey="challenges" title="Challenges"></Tab>
             </Tabs>
             <Route path='/general' component={props=><ModTable {...props} val={this.state.val} filterType='all'/>}/>
             <Route path='/favorite' component={props=><ModTable val={this.state.val} filterType='favorite'/>}/>
             <Route path='/dietchart' component={DietChart} />
             <Route path='/livesessions' component={LiveSessionPage} />
+            <Route path='/challenges' component={Challenges} />
             <Redirect from="/" to="/general" />
         </Router>)
     }
