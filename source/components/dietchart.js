@@ -175,7 +175,7 @@ class DietChart extends React.Component {
       <div>
       <Form style={{float: "left"}} onSubmit={e => {this.updateState(e);this.apiCall()}}>
         <input style={{width: "110px"}} type="text" name="date" defaultValue={this.date}/>
-        <input type="hidden" name="userid" defaultValue={this.userId}/>
+        <input style={{width: "80px"}} type="text" name="userid" defaultValue={this.userId}/>
         <Button type='submit' size="sm" style={{ width: "50px", marginLeft: "20px" }}>Fetch</Button>
       </Form>
 
