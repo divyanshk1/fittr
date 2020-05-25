@@ -1,11 +1,6 @@
 import React, { Component } from 'react'
 import ReactPlayer from 'react-player'
 
-import './reset.css'
-import './defaults.css'
-import './range.css'
-import './App.css'
-
 class Myplayer extends Component {
   constructor(props) {
     super(props)
