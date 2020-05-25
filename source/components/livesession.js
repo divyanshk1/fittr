@@ -33,12 +33,12 @@ class LiveSessionPage extends React.Component {
       return;
     this.isApiCallInProgress = true;
     let baseUrl = 'https://fittr-api.squats.in' + this.endpoint;
-    baseUrl += '/' + this.state.nextPage + '?';
+    baseUrl += `/${overwrite ? 1 : this.state.nextPage}?`;
     // baseUrl += "is_mine=0";
     if(this.date != '')
       baseUrl += "&date=" + Date.parse(this.date)/1000;
     // baseUrl += "&timezone=Asia/Calcutta";
-
+    console.log(this.state.nextPage);
     let headers = {
       'Authorization': `Bearer ${process.env.AUTHENTICATION_TOKEN}`,
       'Content-Type': 'application/json'
@@ -49,7 +49,7 @@ class LiveSessionPage extends React.Component {
       .then(data => { 
         this.setState({ data: overwrite ? data.result.data.session_details: this.state.data.concat( data.result.data.session_details) });
         if (data.result.data.session_details.length) {
-          this.setState({ nextPage: overwrite ? 1 : this.state.nextPage + 1 })
+          this.setState({ nextPage: overwrite ? 2 : this.state.nextPage + 1 })
         }
         this.isApiCallInProgress = false;
       });
