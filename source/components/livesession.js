@@ -5,6 +5,7 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import ReactPlayer from 'react-player'
 import { getTodayDate } from '../utils';
+import Myplayer from './myplayer/myplayer';
 
 
 
@@ -109,7 +110,7 @@ class LiveSessionPage extends React.Component {
               {columns.map(colname => <td key={session_detail.session_id+colname}>{colname=='image_url'? 
               <img style={{height:"200px", width:"180px"}} src={session_detail[colname]}/>: 
               colname == 'live_recorded_file' ? 
-              <ReactPlayer url={session_detail[colname]}/>:
+              <Myplayer url={session_detail[colname]}/>:
               session_detail[colname]}</td>)}
             </tr>
           )}
