@@ -1,6 +1,6 @@
 import React from 'react'
 import fetch from 'node-fetch'
-import { Table } from 'react-bootstrap';
+import { Table, Form, Button } from 'react-bootstrap';
 import Myplayer from './myplayer/myplayer';
 
 
@@ -71,18 +71,22 @@ class Challenges extends React.Component {
   };
   
   render() {
-    let columns = ['id', 'demo_video', 'title', 'description']
+    let columns = ['demo_video', 'title', 'description']
     return <div id="header">
       <div>
       <Table>
         <thead>
           <tr>
-              {columns.map(colname => <td key={'headers'+colname}>{colname}</td>)}
+              <th key='headersid'>id</th>
+              {columns.map(colname => <th key={'headers'+colname}>{colname}</th>)}
           </tr>
         </thead>
         <tbody>
           {this.state.data.map(challenge => 
             <tr post_id={challenge.id} key={challenge.id}>
+              <td key={challenge.id + 'id'}>
+                <Form method="POST" target="_blank" action={`https://fittr-api.squats.in/v6/client/getchallengeleaderboad/${challenge.id}/1`}><Button type="submit">{challenge.id}</Button>
+                </Form></td>
               {columns.map(colname => <td key={challenge.id+colname}>{colname=='demo_video'? 
               <Myplayer url={challenge.demo_video.video}/>: challenge[colname]}</td>)}
             </tr>
