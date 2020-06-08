@@ -1,7 +1,10 @@
 import React from 'react'
 import fetch from 'node-fetch'
 import { Table, Form, Button } from 'react-bootstrap';
+import Tabs from 'react-bootstrap/Tabs'
+import Tab from 'react-bootstrap/Tab'
 import Myplayer from './myplayer/myplayer';
+import Leaderboard from './leaderboard'
 
 
 
@@ -9,22 +12,23 @@ class Challenges extends React.Component {
 
   constructor(props) {
     super(props)
-    console.log("Loading live session page")
     this.userId = process.env.USERID;
     this.endpoint = "/v6/client/subgroups"
     this.isApiCallInProgress = false;
 
     this.state = {
       data: [],
-      nextPage: 1
+      nextPage: 1,
+      tabs: []
     },
-    this.isBottom = this.isBottom.bind(this),
-    this.trackScrolling = this.trackScrolling.bind(this),
-    this.apiCall = this.apiCall.bind(this)
+      this.isBottom = this.isBottom.bind(this),
+      this.trackScrolling = this.trackScrolling.bind(this),
+      this.apiCall = this.apiCall.bind(this)
+      this.addLeaderboardTab = this.addLeaderboardTab.bind(this)
   }
 
   apiCall(overwrite = false) {
-    if(this.isApiCallInProgress)
+    if (this.isApiCallInProgress)
       return;
     this.isApiCallInProgress = true;
     let baseUrl = 'https://fittr-api.squats.in' + this.endpoint;
@@ -34,10 +38,10 @@ class Challenges extends React.Component {
       'Authorization': `Bearer ${process.env.AUTHENTICATION_TOKEN}`
     };
 
-    fetch(baseUrl, {headers: headers})
+    fetch(baseUrl, { headers: headers })
       .then(res => res.json())
-      .then(data => { 
-        this.setState({ data: overwrite ? data.result.data: this.state.data.concat( data.result.data) });
+      .then(data => {
+        this.setState({ data: overwrite ? data.result.data : this.state.data.concat(data.result.data) });
         if (data.result.data.length) {
           this.setState({ nextPage: overwrite ? 2 : this.state.nextPage + 1 })
         }
@@ -46,13 +50,11 @@ class Challenges extends React.Component {
   }
 
   componentDidMount() {
-    console.log("Live session updated")
     document.addEventListener('scroll', this.trackScrolling);
     this.apiCall();
   }
 
   componentWillUnmount() {
-    console.log(`Removing event listener from ${this.props.filterType}`)
     document.removeEventListener('scroll', this.trackScrolling);
   }
 
@@ -61,39 +63,42 @@ class Challenges extends React.Component {
   }
 
   trackScrolling() {
-    console.log('component scroll')
     const wrappedElement = document.getElementById('header');
     if (this.isBottom(wrappedElement)) {
-      console.log('header bottom reached');
-      console.log("Making API call");
       this.apiCall()
     }
   };
-  
+
+  addLeaderboardTab(id) {
+    console.log('challengeid: ' + id);
+    this.setState({tabs: this.state.tabs.concat(id)})
+  }
+
   render() {
     let columns = ['demo_video', 'title', 'description']
-    return <div id="header">
-      <div>
-      <Table>
-        <thead>
-          <tr>
-              <th key='headersid'>id</th>
-              {columns.map(colname => <th key={'headers'+colname}>{colname}</th>)}
-          </tr>
-        </thead>
-        <tbody>
-          {this.state.data.map(challenge => 
-            <tr post_id={challenge.id} key={challenge.id}>
-              <td key={challenge.id + 'id'}>
-                <Form method="POST" target="_blank" action={`https://fittr-api.squats.in/v6/client/getchallengeleaderboad/${challenge.id}/1`}><Button type="submit">{challenge.id}</Button>
-                </Form></td>
-              {columns.map(colname => <td key={challenge.id+colname}>{colname=='demo_video'? 
-              <Myplayer url={challenge.demo_video.video}/>: challenge[colname]}</td>)}
-            </tr>
-          )}
-        </tbody>
-      </Table>
-      </div>
+    return <div key='challenges-div' id="header">
+      <Tabs defaultActiveKey="general">
+        <Tab eventKey="general" title="General">
+          <Table>
+            <thead>
+              <tr>
+                <th key='headersid'>id</th>
+                {columns.map(colname => <th key={'headers' + colname}>{colname}</th>)}
+              </tr>
+            </thead>
+            <tbody>
+              {this.state.data.map(challenge =>
+                <tr post_id={challenge.id} key={challenge.id}>
+                  <td key={challenge.id + 'id'}><Button type="button" onClick={() => this.addLeaderboardTab(challenge.id)}>{challenge.id}</Button></td>
+                  {columns.map(colname => <td key={challenge.id + colname}>{colname == 'demo_video' ?
+                    <Myplayer url={challenge.demo_video.video} /> : challenge[colname]}</td>)}
+                </tr>
+              )}
+            </tbody>
+          </Table>
+        </Tab>
+        {this.state.tabs.map(id => <Tab eventKey="temporary" title="Temporary"><Leaderboard id={id} /></Tab>)}
+      </Tabs>
     </div>
   }
 }

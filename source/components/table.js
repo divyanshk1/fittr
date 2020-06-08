@@ -55,27 +55,21 @@ class ModTable extends React.Component {
   }
 
   componentDidMount() {
-    console.log('component mount')
     this.apiCall();
     document.addEventListener('scroll', this.trackScrolling);
   }
 
   componentWillUnmount() {
-    console.log(`Removing event listener from ${this.props.filterType}`)
     document.removeEventListener('scroll', this.trackScrolling);
   }
 
   componentDidUpdate(prevProps) {
-    console.log('component update')
     if (this.props.val != prevProps.val) this.apiCall(true);
   }
 
   trackScrolling() {
-    console.log('component scroll')
     const wrappedElement = document.getElementById('header');
     if (this.isBottom(wrappedElement)) {
-      console.log('header bottom reached');
-      console.log("Making API call");
       this.apiCall()
     }
   };
