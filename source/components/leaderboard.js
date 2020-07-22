@@ -11,8 +11,7 @@ class Leaderboard extends React.Component {
 
   constructor(props) {
     super(props)
-    console.log(props.id)
-    this.userId = process.env.USERID;
+        this.userId = process.env.USERID;
     this.endpoint = `/v6/client/list_media/2`
     this.isApiCallInProgress = false;
 
@@ -33,8 +32,7 @@ class Leaderboard extends React.Component {
     this.isApiCallInProgress = true;
     let baseUrl = 'https://fittr-api.squats.in' + this.endpoint;
     baseUrl += `/${overwrite ? 1 : this.state.nextPage}`;
-    console.log(this.state.searchText)
-    baseUrl += `?challenge_id=${this.props.id}&search_text=${this.state.searchText}&is_approved=false`
+        baseUrl += `?challenge_id=${this.props.id}&search_text=${this.state.searchText}&is_approved=false`
     let headers = {
       'Authorization': `Bearer ${process.env.AUTHENTICATION_TOKEN}`
     };
@@ -42,8 +40,7 @@ class Leaderboard extends React.Component {
     fetch(baseUrl, { headers: headers })
       .then(res => res.json())
       .then(data => {
-        console.log(data.result.data.posts);
-        this.setState({ data: overwrite ? data.result.data.posts : this.state.data.concat(data.result.data.posts) });
+                this.setState({ data: overwrite ? data.result.data.posts : this.state.data.concat(data.result.data.posts) });
         if (data.result.data.posts.length) {
           this.setState({ nextPage: overwrite ? 2 : this.state.nextPage + 1 })
         }
@@ -52,14 +49,12 @@ class Leaderboard extends React.Component {
   }
 
   componentDidMount() {
-    console.log("Live session updated")
-    document.addEventListener('scroll', this.trackScrolling);
+        document.addEventListener('scroll', this.trackScrolling);
     this.apiCall();
   }
 
   componentWillUnmount() {
-    console.log(`Removing event listener from ${this.props.filterType}`)
-    document.removeEventListener('scroll', this.trackScrolling);
+        document.removeEventListener('scroll', this.trackScrolling);
   }
 
   isBottom(el) {
@@ -67,12 +62,9 @@ class Leaderboard extends React.Component {
   }
 
   trackScrolling() {
-    console.log('component scroll')
-    const wrappedElement = document.getElementById('header');
+        const wrappedElement = document.getElementById('header');
     if (this.isBottom(wrappedElement)) {
-      console.log('header bottom reached');
-      console.log("Making API call");
-      this.apiCall()
+                  this.apiCall()
     }
   };
 
@@ -80,8 +72,7 @@ class Leaderboard extends React.Component {
     event.preventDefault()
     let target = event.target[0].value;
     this.setState({searchText : target})
-    console.log(this.state.searchText)
-    this.apiCall(true);  
+        this.apiCall(true);  
   }
 
   render() {

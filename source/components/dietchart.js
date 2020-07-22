@@ -33,7 +33,7 @@ class DietChart extends React.Component {
   }
 
   apiCall() {
-    let baseUrl = 'https://diettool.squats.in/v2/appdietchart/?format=json';
+    let baseUrl = 'https://diettool.squats.in/v3/appdietchart/?format=json';
     let jsonbody = {
       'params': {
         'date': this.date,
@@ -61,7 +61,7 @@ class DietChart extends React.Component {
   deleteItem(event) {
     let foodtype = event.target.getAttribute("foodtype");
     let food_item_id = event.target.getAttribute("food_item_id");
-    let baseUrl = "https://diettool.squats.in/v2/delete/";
+    let baseUrl = "https://diettool.squats.in/v3/delete/";
     let jsonbody = {
       'params': {
         'date': this.date,
@@ -94,13 +94,11 @@ class DietChart extends React.Component {
     let oldQuantity = item.quantity;
     let newQuantity = parseInt(document.getElementById(foodtype + 'quantity-'+item.id).value)
     if(Number.isNaN(newQuantity) || newQuantity <= 0) {
-      console.log("Invalid quantity added");
-      return;
+            return;
     }
 
     if(oldQuantity == newQuantity) {
-      console.log("Quantity is same: " + oldQuantity);
-      return;
+            return;
     }
     let factor = newQuantity / oldQuantity;
 
@@ -121,7 +119,7 @@ class DietChart extends React.Component {
     }
     body.params.diet_chart[foodtype] = [copyItem];
 
-    let baseUrl = "https://diettool.squats.in/v2/appstorefooditems/";
+    let baseUrl = "https://diettool.squats.in/v3/appstorefooditems/";
     let headers = {
       'Authorization': `Bearer ${process.env.AUTHENTICATION_TOKEN}`,
       'Content-Type': 'application/json'
@@ -148,7 +146,7 @@ class DietChart extends React.Component {
       'Authorization': `Bearer ${process.env.AUTHENTICATION_TOKEN}`,
       'Content-Type': 'application/json'
     };
-    let url = "https://diettool.squats.in/v2/copychart/";
+    let url = "https://diettool.squats.in/v3/copychart/";
 
     let params = {
       params: {
@@ -162,7 +160,6 @@ class DietChart extends React.Component {
       method: "POST",
       body : JSON.stringify(params)
     })
-    .then(console.log("Successfully copied"))
     .catch(error => {
       console.error(error);
     });

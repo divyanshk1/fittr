@@ -32,7 +32,7 @@ class ModTable extends React.Component {
     if(this.isApiCallInProgress)
       return;
     this.isApiCallInProgress = true;
-    let baseUrl = 'https://diettool.squats.in/v2/appingredients/?';
+    let baseUrl = 'https://diettool.squats.in/v3/appingredients/?';
     baseUrl += `filter_type=${this.props.filterType}&`;
     baseUrl += this.props.filterType == 'favorite' ? `user_id=${process.env.USERID}&` : '';
     baseUrl += 'format=json&';
@@ -85,7 +85,7 @@ class ModTable extends React.Component {
       }
     }
 
-    let baseUrl = "https://diettool.squats.in/v2/appstorefooditems/"
+    let baseUrl = "https://diettool.squats.in/v3/appstorefooditems/"
     let headers = {
       Authorization: `Bearer ${process.env.AUTHENTICATION_TOKEN}`,
       'Content-Type': 'application/json'
@@ -98,8 +98,7 @@ class ModTable extends React.Component {
     })
       .then(res => res.json())
       .then(data => {
-        console.log("Submitted")
-      });
+              });
   }
 
   addItem(event, item) {
@@ -113,25 +112,14 @@ class ModTable extends React.Component {
     }
 
     let copyItem = JSON.parse(JSON.stringify(item));
-    copyItem['foodAddedMap'] = {};
     let factor = quantity / item.quantity;
-    copyItem['foodAddedMap'][timetype] = {
-      calories: item.calories * factor,
-      carbs: item.carbs * factor,
-      protein: item.protein * factor,
-      fats: item.fats * factor,
-      isSelected: true,
-      quantity: quantity,
-      tagType: timetype
-    };
     copyItem['calories'] =  item.calories * factor;  
     copyItem['carbs'] =  item.carbs * factor;  
     copyItem['protein'] =  item.protein * factor;  
     copyItem['fats'] =  item.fats * factor;  
     copyItem['quantity'] =  quantity; 
 
-    console.log(JSON.stringify(copyItem));
-    if (!this.addItemJson.diet_chart[timetype])
+        if (!this.addItemJson.diet_chart[timetype])
       this.addItemJson.diet_chart[timetype] = []
     this.addItemJson.diet_chart[timetype].push(copyItem);
     this.setState({totalAddedItems: this.state.totalAddedItems+1})

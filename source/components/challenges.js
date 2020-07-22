@@ -70,8 +70,7 @@ class Challenges extends React.Component {
   };
 
   addLeaderboardTab(id) {
-    console.log('challengeid: ' + id);
-    this.setState({tabs: this.state.tabs.concat(id)})
+        this.setState({tabs: this.state.tabs.concat(id)})
   }
 
   render() {

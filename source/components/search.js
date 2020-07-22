@@ -11,8 +11,7 @@ class Search extends React.Component {
   submitForm(event) {
     event.preventDefault()
     let target = event.target[0].value;
-    console.log(target);
-    this.props.updateTable(target);
+        this.props.updateTable(target);
   }
 
   render() {

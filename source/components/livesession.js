@@ -12,8 +12,7 @@ class LiveSessionPage extends React.Component {
 
   constructor(props) {
     super(props)
-    console.log("Loading live session page")
-    this.userId = process.env.USERID;
+        this.userId = process.env.USERID;
     this.endpoint = "/v6/live_session/list"
     this.isApiCallInProgress = false;
     this.date = getTodayDate();
@@ -38,8 +37,7 @@ class LiveSessionPage extends React.Component {
     if(this.date != '')
       baseUrl += "&date=" + Date.parse(this.date)/1000;
     // baseUrl += "&timezone=Asia/Calcutta";
-    console.log(this.state.nextPage);
-    let headers = {
+        let headers = {
       'Authorization': `Bearer ${process.env.AUTHENTICATION_TOKEN}`,
       'Content-Type': 'application/json'
     };
@@ -56,14 +54,12 @@ class LiveSessionPage extends React.Component {
   }
 
   componentDidMount() {
-    console.log("Live session updated")
-    document.addEventListener('scroll', this.trackScrolling);
+        document.addEventListener('scroll', this.trackScrolling);
     this.apiCall();
   }
 
   componentWillUnmount() {
-    console.log(`Removing event listener from ${this.props.filterType}`)
-    document.removeEventListener('scroll', this.trackScrolling);
+        document.removeEventListener('scroll', this.trackScrolling);
   }
 
   isBottom(el) {
@@ -71,12 +67,9 @@ class LiveSessionPage extends React.Component {
   }
 
   trackScrolling() {
-    console.log('component scroll')
-    const wrappedElement = document.getElementById('header');
+        const wrappedElement = document.getElementById('header');
     if (this.isBottom(wrappedElement)) {
-      console.log('header bottom reached');
-      console.log("Making API call");
-      this.apiCall()
+                  this.apiCall()
     }
   };
 
